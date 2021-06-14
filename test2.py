@@ -1,5 +1,11 @@
 import requests
 import json
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("pb_token", help="Your pushbot token")
+args = parser.parse_args()
+pb_token_=args.pb_token
 
 pass_url = "https://passportappointment.travel.state.gov/appointment/new/travelplans"
 cookies = {
@@ -51,7 +57,7 @@ except:
 
 def pushbullet_message(title, body, url):
     msg = {"type": "link", "title": title, "body": body, "url": url}
-    TOKEN = 'o.o03MeLoFArxF5SXACxJ0sMOFrh1RbQMU'
+    TOKEN = pb_token_
     resp = requests.post('https://api.pushbullet.com/v2/pushes',
                          data=json.dumps(msg),
                          headers={'Authorization': 'Bearer ' + TOKEN,
