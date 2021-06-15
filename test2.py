@@ -38,23 +38,6 @@ headers = {
         'Accept-Language': 'en-US,en;q=0.9',
     }
 
-data = {
-      'latitude': '21.275055599999998',
-      'longitude': '-157.818455',
-      'dateTravel': '6/21/2021 12:00:00 AM',
-      'dateVisaNeeded': '',
-      '__RequestVerificationToken': 'zlKkkfeSKeU4cKUb-IBiDhdiNYkzOTPDZas5_sW6qUttbmc41h21nhi_hfHwp2XsX7SceFTmgOKDi6wIYMQwP5nMP7g1'
-    }
-
-response = requests.post('https://passportappointment.travel.state.gov/appointment/new/findclosestagencies', headers=headers, cookies=cookies, data=data)
-
-import sys
-try:
-    results = json.loads(response.text)
-except:
-    print(response.text)
-    sys.exit()
-
 def pushbullet_message(title, body, url):
     msg = {"type": "link", "title": title, "body": body, "url": url}
     TOKEN = pb_token_
@@ -66,16 +49,36 @@ def pushbullet_message(title, body, url):
         raise Exception('Error',resp.status_code)
     else:
         print ('Message sent')
-        
-for result in results:
-    name = result["Name"]
-    is_avail = result["IsAvailable"]
-    if is_avail:
-        msg = name + " is available"
-        print(msg)
-        pushbullet_message("Passport Bot", msg, pass_url)
-    else:
-        msg = name + " is not available"
-        print(msg)
-        #### DOE NOT SUBMIT: For testing ###
-#        pushbullet_message("Passport Bot", msg, pass_url)
+
+def run(date_str):
+    data = {
+        'latitude': '21.275055599999998',
+        'longitude': '-157.818455',
+        'dateTravel': '%s 12:00:00 AM' % (date_str),
+        'dateVisaNeeded': '',
+        '__RequestVerificationToken': 'zlKkkfeSKeU4cKUb-IBiDhdiNYkzOTPDZas5_sW6qUttbmc41h21nhi_hfHwp2XsX7SceFTmgOKDi6wIYMQwP5nMP7g1'
+    }
+
+    response = requests.post('https://passportappointment.travel.state.gov/appointment/new/findclosestagencies', headers=headers, cookies=cookies, data=data)
+
+    try:
+        results = json.loads(response.text)
+    except:
+        print(response.text)
+        sys.exit()
+    for result in results:
+        name = result["Name"]
+        is_avail = result["IsAvailable"]
+        msg_base = name + " " + date_str
+        if is_avail:
+            msg = msg_base +  " is available"
+            print(msg)
+            pushbullet_message("Passport Bot", msg, pass_url)
+        else:
+            msg = msg_base + " is not available"
+            print(msg)
+            #### DOE NOT SUBMIT: For testing ###
+            #        pushbullet_message("Passport Bot", msg, pass_url)
+run('6/21/2021')
+run('7/3/2021')
+
