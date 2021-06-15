@@ -70,6 +70,8 @@ def run(date_str):
         name = result["Name"]
         is_avail = result["IsAvailable"]
         msg_base = name + " " + date_str
+        if date_str == '7/3/2021' and name == 'Honolulu Passport Agency':
+            continue
         if is_avail:
             msg = msg_base +  " is available"
             print(msg)
@@ -81,4 +83,3 @@ def run(date_str):
             #        pushbullet_message("Passport Bot", msg, pass_url)
 run('6/21/2021')
 run('7/3/2021')
-
